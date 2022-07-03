@@ -43,6 +43,7 @@ public class ScrollRectAutoScroll : MonoBehaviour
 			}
         }
         Setup();
+        FixNavigation();
     }
 
     void Update()
@@ -107,4 +108,74 @@ public class ScrollRectAutoScroll : MonoBehaviour
         _scrollMoveFraction = 1f / _totalRows;
         //Debug.Log($"{childCount} -> {hiddenSlots} -> {hiddenSlots / 5} -> {_totalRows} -> {_scrollMoveFraction}");
     }
+
+    private void FixNavigationFull()
+    {
+        for (int i = 0; i < _selectables.Count; i++)
+        {
+            Debug.Log($"{_selectables[i].name}");
+            var navigation = _selectables[i].navigation;
+            navigation.mode = Navigation.Mode.Explicit;
+            if (i - 1 >= 0)
+			{
+                navigation.selectOnLeft = _selectables[i - 1];
+            }
+            else
+			{
+                navigation.selectOnLeft = _selectables[_selectables.Count - 1];
+            }
+            if (i + 1 <= _selectables.Count - 1)
+			{
+                navigation.selectOnRight = _selectables[i + 1];
+            }
+            else
+			{
+                navigation.selectOnRight = _selectables[0];
+            }
+            if (i - 5 >= 0)
+			{
+                navigation.selectOnUp = _selectables[i - 5];
+            }
+            else
+			{
+                navigation.selectOnUp = _selectables[i - 5 + _selectables.Count];
+            }
+            if (i + 5 <= _selectables.Count - 1)
+			{
+                navigation.selectOnDown = _selectables[i + 5];
+            }
+            else
+			{
+                navigation.selectOnDown = _selectables[i + 5 - _selectables.Count];
+            }
+            _selectables[i].navigation = navigation;
+        }
+    }
+
+    private void FixNavigation()
+	{
+        for(int i = 0; i < _selectables.Count; i++)
+		{
+            Debug.Log($"{_selectables[i].name}");
+            var navigation = _selectables[i].navigation;
+            navigation.mode = Navigation.Mode.Explicit;
+            if (i - 1 >= 0) navigation.selectOnLeft = _selectables[i - 1];
+            if (i + 1 <= _selectables.Count - 1) navigation.selectOnRight = _selectables[i + 1];
+            if (i - 5 >= 0) navigation.selectOnUp = _selectables[i - 5];
+            if (i + 5 <= _selectables.Count - 1) navigation.selectOnDown = _selectables[i + 5];
+            _selectables[i].navigation = navigation;
+        }
+	}
+
+    private void MoveToEnd(int selectedIndex)
+	{
+        if(Input.GetKeyDown(KeyCode.LeftArrow))
+		{
+            if(selectedIndex == 0)
+			{
+                EventSystem.current.SetSelectedGameObject(_selectables[_selectables.Count - 1].gameObject);
+
+            }
+        }
+	}
 }
